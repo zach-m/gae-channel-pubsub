@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Pubsub Test Page</title>
+
+<style type="text/css">
+#console-container {
+	margin-top: 15px;
+	width: 400px;
+}
+
+#console {
+	border: 1px solid #CCCCCC;
+	border-right-color: #999999;
+	border-bottom-color: #999999;
+	height: 480px;
+	overflow-y: scroll;
+	padding-left: 5px;
+	padding-right: 5px;
+	width: 100%;
+}
+
+#console p {
+	padding: 0;
+	margin: 0;
+}
+</style>
+
+<script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="/_ah/channel/jsapi"></script>
+<script src="/pubsub-min.js"></script>
+
+<script>
+	function logMessage(message, color) {
+		var console = document.getElementById('console');
+		var p = document.createElement('p');
+		p.style.wordWrap = 'break-word';
+		if (color && (color != null)) {
+			p.style.color = color;
+		}
+		p.innerHTML = message;
+		console.appendChild(p);
+		while (console.childNodes.length > 100) {
+			console.removeChild(console.firstChild);
+		}
+		console.scrollTop = console.scrollHeight;
+	}
+
+	function onBodyLoad() {
+		if (!window.location.origin)
+			window.location.origin = window.location.protocol + "//" + window.location.host;
+		$('#topicEdit').val("topic1");
+	}
+	
+	pubsub.listener.onConnect = function() {
+		logMessage('Connected', 'green');
+	};
+
+	pubsub.listener.onDisconnect = function() {
+		logMessage('Disconnected', 'red');
+	};
+
+	pubsub.listener.onMessageReceived = function(msg, topic) {
+		logMessage('RECV message (' + topic + '): ' + msg, 'blue');
+	};
+
+	pubsub.listener.onMessageSent = function(msg, subCount) {
+		logMessage("SENT message (" + subCount + " subs): " + msg, 'black');
+	};
+
+	pubsub.listener.onError = function(code, description) {
+		logMessage('ERROR (' + code + '): ' + description, 'red');
+	};
+
+	pubsub.listener.onToken = function(token) {
+		logMessage("Received token: " + token, 'grey');
+	};
+
+	pubsub.listener.onSubscribe = function(topic, subCount) {
+		logMessage("Subscribed: " + topic + "  (" + subCount + " subs)", 'grey');
+	};
+</script>
+
+</head>
+
+<body onload="onBodyLoad()">
+	<br />
+	<button id="connectBtn"
+		onclick="pubsub.connect(window.location.origin + '/api/pubsub')">Connect</button>
+	<br /> Topic:
+	<input type="text" name="topicEdit" id="topicEdit" value="topic-here"
+		style="width: 350px;" />
+	<button id="subscribeBtn"
+		onclick="pubsub.subscribe(document.getElementsByName('topicEdit')[0].value)">Subscribe</button>
+	<br />
+	<input type="text" name="msgEdit" id="msgEdit" value="Get This!" />
+	<button id="publishBtn"
+		onclick="pubsub.publish(document.getElementsByName('topicEdit')[0].value, document.getElementsByName('msgEdit')[0].value, false)">Publish</button>
+	<br />
+	<div id="console-container">
+		<div id="console"></div>
+	</div>
+</body>
+</html>
