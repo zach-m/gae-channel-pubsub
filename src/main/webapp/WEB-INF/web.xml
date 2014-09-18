@@ -10,7 +10,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 
 	<servlet>
 		<servlet-name>Pubsub</servlet-name>
-		<servlet-class>org.tectonica.pubsub.PubsubServlet</servlet-class>
+		<servlet-class>org.tectonica.pubsub.servlet.PubsubServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Pubsub</servlet-name>

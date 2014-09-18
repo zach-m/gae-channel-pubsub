@@ -1,10 +1,12 @@
-package org.tectonica.pubsub;
+package org.tectonica.pubsub.servlet;
 
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.tectonica.pubsub.persist.PubsubInMemStore;
 
 import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelPresence;
@@ -17,7 +19,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 public class PubsubServlet extends AbstractPubsubServlet
 {
 	private ChannelService channelService = ChannelServiceFactory.getChannelService();
-	private PubsubStore pubsubStore = PubsubStore.get();
+	private PubsubStore pubsubStore = PubsubInMemStore.get();
 
 	@Override
 	protected String connect(String clientId)

@@ -1,4 +1,4 @@
-package org.tectonica.pubsub;
+package org.tectonica.util;
 
 import java.util.HashSet;
 import java.util.Set;

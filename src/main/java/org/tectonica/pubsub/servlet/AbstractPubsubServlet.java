@@ -1,4 +1,4 @@
-package org.tectonica.pubsub;
+package org.tectonica.pubsub.servlet;
 
 import java.io.IOException;
 
@@ -6,6 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.tectonica.util.ServletUtil;
 
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
