@@ -6,34 +6,33 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.tectonica.pubsub.intf.PubsubPersister;
 import org.tectonica.pubsub.persist.PubsubInMemStore;
+import org.tectonica.util.JsonUtil;
 
 import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelPresence;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
-import com.google.appengine.labs.repackaged.org.json.JSONException;
-import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 @SuppressWarnings("serial")
 public class PubsubServlet extends AbstractPubsubServlet
 {
 	private ChannelService channelService = ChannelServiceFactory.getChannelService();
-	private PubsubStore pubsubStore = PubsubInMemStore.get();
+	private PubsubPersister pubsubStore = PubsubInMemStore.get();
 
 	@Override
-	protected String connect(String clientId)
+	public String connect(String clientId)
 	{
 		if (clientId == null || clientId.isEmpty())
 			clientId = UUID.randomUUID().toString();
 		String token = channelService.createChannel(clientId);
 		pubsubStore.setClientToken(clientId, token);
-		System.out.println("token for '" + clientId + "' is: " + token);
 		return token;
 	}
 
 	@Override
-	protected void connectionStateChanged(HttpServletRequest req)
+	public void connectionStateChanged(HttpServletRequest req)
 	{
 		try
 		{
@@ -61,36 +60,33 @@ public class PubsubServlet extends AbstractPubsubServlet
 	}
 
 	@Override
-	protected JSONObject subscribe(String topic, String token) throws JSONException
+	public PublishResponse publish(String topic, String msg, String excludeToken)
 	{
-		int subCount = pubsubStore.attachSubscriber(topic, token);
-		JSONObject content = new JSONObject();
-		content.put("subCount", subCount);
-		return content;
-	}
+		MessagePayload mp = new MessagePayload();
+		mp.msg = msg;
+		mp.topic = topic;
 
-	@Override
-	protected JSONObject publish(String topic, String msg, String excludeToken) throws JSONException
-	{
-		JSONObject data = new JSONObject();
-		data.put("msg", msg);
-		data.put("topic", topic);
-
-		int subCount = 0;
+		PublishResponse response = new PublishResponse();
+		response.subCount = 0;
 
 		Set<String> subscribers = pubsubStore.getSubscribers(topic);
 		if (subscribers != null)
 		{
 			subscribers.remove(excludeToken);
-			String payload = data.toString();
-			subCount = subscribers.size();
+			String payloadJson = JsonUtil.toJson(mp);
+			response.subCount = subscribers.size();
 			for (String token : subscribers)
-				channelService.sendMessage(new ChannelMessage(token, payload));
+				channelService.sendMessage(new ChannelMessage(token, payloadJson));
 		}
 
-		JSONObject content = new JSONObject();
-		content.put("subCount", subCount);
+		return response;
+	}
 
-		return content;
+	@Override
+	public SubscribeResponse subscribe(String topic, String token, boolean autoCreateTopic)
+	{
+		SubscribeResponse response = new SubscribeResponse();
+		response.subCount = pubsubStore.attachSubscriber(topic, token, autoCreateTopic);
+		return response;
 	}
 }

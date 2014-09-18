@@ -6,55 +6,69 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConcurrentMultimap<K, V>
 {
-	private ConcurrentHashMap<K, Set<V>> index = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<K, Set<V>> map = new ConcurrentHashMap<>();
 
-	// TODO: change to put()
-	public int add(K primary, V foreign)
+	public int put(K key, V value)
 	{
-		HashSet<V> initial = new HashSet<V>();
-		Set<V> foreigns = index.putIfAbsent(primary, initial);
-		if (foreigns == null)
-			foreigns = initial;
-		synchronized (foreigns)
-		{
-			foreigns.add(foreign);
-		}
-		return foreigns.size();
+		return put(key, value, true);
 	}
 
-	public int remove(K primary, V foreign)
+	public int put(K key, V value, boolean autoCreateKey)
 	{
-		Set<V> foreigns = index.get(primary);
-		if (foreigns == null)
-			return 0;
-		synchronized (foreigns)
+		Set<V> valuesSet;
+		if (autoCreateKey)
 		{
-			foreigns.remove(foreign);
+			HashSet<V> emptySet = new HashSet<V>();
+			valuesSet = map.putIfAbsent(key, emptySet);
+			if (valuesSet == null)
+				valuesSet = emptySet;
 		}
-		// TODO: remove primary after the last foreign is gone
-		return foreigns.size();
+		else
+		{
+			valuesSet = map.get(key);
+			if (valuesSet == null)
+				return 0;
+		}
+		synchronized (valuesSet)
+		{
+			valuesSet.add(value);
+		}
+		return valuesSet.size();
+	}
+
+	public Set<V> get(K key)
+	{
+		Set<V> valuesSet = map.get(key);
+		if (valuesSet == null)
+			return null;
+		synchronized (valuesSet)
+		{
+			return new HashSet<V>(valuesSet);
+		}
+	}
+
+	public int remove(K key, V value)
+	{
+		Set<V> valuesSet = map.get(key);
+		if (valuesSet == null)
+			return 0;
+		synchronized (valuesSet)
+		{
+			valuesSet.remove(value);
+			if (valuesSet.isEmpty())
+				map.remove(key);
+			return valuesSet.size();
+		}
 	}
 
 	public void removeFromAll(V foreign)
 	{
-		for (K primary: index.keySet())
-			remove(primary, foreign);
+		for (K key : map.keySet())
+			remove(key, foreign);
 	}
 
 	public void clear()
 	{
-		index.clear();
-	}
-
-	// TODO: change to get()
-	public Set<V> valuesOf(K primary)
-	{
-		Set<V> foreigns = index.get(primary);
-		if (foreigns == null)
-			return null;
-		synchronized (foreigns)
-		{
-			return new HashSet<V>(foreigns);
-		}
+		map.clear();
 	}
 }

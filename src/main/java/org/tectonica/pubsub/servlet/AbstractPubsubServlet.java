@@ -7,22 +7,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.tectonica.pubsub.intf.PubsubAgent;
+import org.tectonica.util.JsonUtil;
 import org.tectonica.util.ServletUtil;
 
-import com.google.appengine.labs.repackaged.org.json.JSONException;
-import com.google.appengine.labs.repackaged.org.json.JSONObject;
-
 @SuppressWarnings("serial")
-public abstract class AbstractPubsubServlet extends HttpServlet
+public abstract class AbstractPubsubServlet extends HttpServlet implements PubsubAgent
 {
-	abstract protected String connect(String clientId);
-
-	abstract protected void connectionStateChanged(HttpServletRequest req);
-
-	abstract protected JSONObject publish(String topic, String msg, String excludeToken) throws JSONException;
-
-	abstract protected JSONObject subscribe(String topic, String token) throws JSONException;
-
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
@@ -45,9 +36,10 @@ public abstract class AbstractPubsubServlet extends HttpServlet
 				String[] pieces = uri.split("/");
 				if ("subscribe".equals(pieces[1]))
 				{
+					boolean autoCreateTopic = true; // NOTE: you need to make a security-decision here
 					resp.setContentType("application/json");
-					JSONObject content = subscribe(pieces[2], pieces[3]);
-					resp.getWriter().print(content);
+					SubscribeResponse response = subscribe(pieces[2], pieces[3], autoCreateTopic);
+					JsonUtil.toJson(resp.getWriter(), response);
 				}
 			}
 		}
@@ -79,8 +71,8 @@ public abstract class AbstractPubsubServlet extends HttpServlet
 			ServletUtil.applyCORS(req, resp);
 
 			resp.setContentType("application/json");
-			JSONObject content = publish(topic, msg, req.getParameter("exclude"));
-			resp.getWriter().print(content);
+			PublishResponse response = publish(topic, msg, req.getParameter("exclude"));
+			JsonUtil.toJson(resp.getWriter(), response);
 		}
 		catch (Exception e)
 		{

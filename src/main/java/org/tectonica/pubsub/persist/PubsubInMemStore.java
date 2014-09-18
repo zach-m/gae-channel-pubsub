@@ -3,10 +3,10 @@ package org.tectonica.pubsub.persist;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.tectonica.pubsub.servlet.PubsubStore;
+import org.tectonica.pubsub.intf.PubsubPersister;
 import org.tectonica.util.ConcurrentMultimap;
 
-public class PubsubInMemStore implements PubsubStore
+public class PubsubInMemStore implements PubsubPersister
 {
 	private ConcurrentHashMap<String, String> clientToToken = new ConcurrentHashMap<>();
 
@@ -33,9 +33,9 @@ public class PubsubInMemStore implements PubsubStore
 	private ConcurrentMultimap<String, String> topicToSubscribers = new ConcurrentMultimap<>();
 
 	@Override
-	public int attachSubscriber(String topic, String token)
+	public int attachSubscriber(String topic, String token, boolean autoCreateTopic)
 	{
-		return topicToSubscribers.add(topic, token);
+		return topicToSubscribers.put(topic, token, autoCreateTopic);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class PubsubInMemStore implements PubsubStore
 	@Override
 	public Set<String> getSubscribers(String topic)
 	{
-		return topicToSubscribers.valuesOf(topic);
+		return topicToSubscribers.get(topic);
 	}
 
 	// /////////////////////////////////////////////
@@ -57,9 +57,9 @@ public class PubsubInMemStore implements PubsubStore
 		// singleton
 	}
 
-	private static PubsubStore instance = new PubsubInMemStore();
+	private static PubsubPersister instance = new PubsubInMemStore();
 
-	public static PubsubStore get()
+	public static PubsubPersister get()
 	{
 		return instance;
 	}
