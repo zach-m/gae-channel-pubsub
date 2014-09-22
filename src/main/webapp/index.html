@@ -27,8 +27,9 @@
 </style>
 
 <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="/_ah/channel/jsapi"></script>
-<script src="/pubsub-min.js"></script>
+<!--  script src="/_ah/channel/jsapi"></script -->
+<script src="https://talkgadget.google.com/talkgadget/channel.js"></script>
+<script src="/pubsub.js"></script>
 
 <script>
 	function logMessage(message, color) {
@@ -52,31 +53,31 @@
 		$('#topicEdit').val("topic1");
 	}
 	
-	pubsub.listener.onConnect = function() {
+	PBSB.listener.onConnect = function() {
 		logMessage('Connected', 'green');
 	};
 
-	pubsub.listener.onDisconnect = function() {
+	PBSB.listener.onDisconnect = function() {
 		logMessage('Disconnected', 'red');
 	};
 
-	pubsub.listener.onMessageReceived = function(msg, topic) {
+	PBSB.listener.onMessageReceived = function(msg, topic) {
 		logMessage('RECV message (' + topic + '): ' + msg, 'blue');
 	};
 
-	pubsub.listener.onMessageSent = function(msg, subCount) {
+	PBSB.listener.onMessageSent = function(msg, subCount) {
 		logMessage("SENT message (" + subCount + " subs): " + msg, 'black');
 	};
 
-	pubsub.listener.onError = function(code, description) {
+	PBSB.listener.onError = function(code, description) {
 		logMessage('ERROR (' + code + '): ' + description, 'red');
 	};
 
-	pubsub.listener.onToken = function(token) {
+	PBSB.listener.onToken = function(token) {
 		logMessage("Received token: " + token, 'grey');
 	};
 
-	pubsub.listener.onSubscribe = function(topic, subCount) {
+	PBSB.listener.onSubscribe = function(topic, subCount) {
 		logMessage("Subscribed: " + topic + "  (" + subCount + " subs)", 'grey');
 	};
 </script>
@@ -86,16 +87,16 @@
 <body onload="onBodyLoad()">
 	<br />
 	<button id="connectBtn"
-		onclick="pubsub.connect(window.location.origin + '/api/pubsub')">Connect</button>
+		onclick="PBSB.connect(window.location.origin + '/pubsub')">Connect</button>
 	<br /> Topic:
 	<input type="text" name="topicEdit" id="topicEdit" value="topic-here"
 		style="width: 350px;" />
 	<button id="subscribeBtn"
-		onclick="pubsub.subscribe(document.getElementsByName('topicEdit')[0].value)">Subscribe</button>
+		onclick="PBSB.subscribe(document.getElementsByName('topicEdit')[0].value)">Subscribe</button>
 	<br />
 	<input type="text" name="msgEdit" id="msgEdit" value="Get This!" />
 	<button id="publishBtn"
-		onclick="pubsub.publish(document.getElementsByName('topicEdit')[0].value, document.getElementsByName('msgEdit')[0].value, false)">Publish</button>
+		onclick="PBSB.publish(document.getElementsByName('topicEdit')[0].value, document.getElementsByName('msgEdit')[0].value, false)">Publish</button>
 	<br />
 	<div id="console-container">
 		<div id="console"></div>

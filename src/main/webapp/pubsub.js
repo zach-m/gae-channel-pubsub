@@ -6,7 +6,7 @@
 	var mConnected = false;
 
 	// public interface
-	var pubsub = {
+	var PBSB = {
 		config : {
 			verbose : true, // pertains to console logging
 		// autoReconnect
@@ -37,7 +37,7 @@
 				success : function(token) {
 					mToken = token.trim();
 					log('*** ontoken: ' + mToken);
-					pubsub.listener.onToken(mToken);
+					PBSB.listener.onToken(mToken);
 					openChannel(mToken);
 				}
 			});
@@ -50,7 +50,7 @@
 				success : function(data) {
 					subCount = data.subCount;
 					log('*** onsubscribe: ' + topic + '  (' + subCount + ' subscribers)');
-					pubsub.listener.onSubscribe(topic, subCount);
+					PBSB.listener.onSubscribe(topic, subCount);
 				}
 			});
 		},
@@ -64,7 +64,7 @@
 				contentType : "text/plain; charset=utf-8",
 				success : function(data) {
 					log('*** onpublish (' + topic + '): ' + msg);
-					pubsub.listener.onMessageSent(msg, data.subCount);
+					PBSB.listener.onMessageSent(msg, data.subCount);
 				}
 			});
 		}
@@ -76,30 +76,30 @@
 			'onopen' : function() {
 				log('*** onopen ***');
 				mConnected = true;
-				pubsub.listener.onConnect();
+				PBSB.listener.onConnect();
 			},
 			'onmessage' : function(evt) {
 				log('*** onmessage: ' + JSON.stringify(evt));
 				data = JSON.parse(evt.data);
-				pubsub.listener.onMessageReceived(data.msg, data.topic);
+				PBSB.listener.onMessageReceived(data.msg, data.topic);
 			},
 			'onerror' : function(evt) {
 				log('*** onerror: ' + JSON.stringify(evt));
-				pubsub.listener.onError(evt.code, evt.description);
+				PBSB.listener.onError(evt.code, evt.description);
 			},
 			'onclose' : function() {
 				log('*** onclose ***');
 				mConnected = false;
-				pubsub.listener.onDisconnect();
+				PBSB.listener.onDisconnect();
 				// TODO: initiate auto-reconnect?
 			}
 		});
 	}
 
 	function log(text) {
-		if (pubsub.config.verbose)
+		if (PBSB.config.verbose)
 			console.log(text);
 	}
 
-	window.pubsub = pubsub;
+	window.PBSB = PBSB;
 })();

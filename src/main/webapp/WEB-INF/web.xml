@@ -14,7 +14,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Pubsub</servlet-name>
-		<url-pattern>/api/pubsub/*</url-pattern>
+		<url-pattern>/pubsub/*</url-pattern>
 		<url-pattern>/_ah/channel/connected/*</url-pattern>
 		<url-pattern>/_ah/channel/disconnected/*</url-pattern>
 	</servlet-mapping>
