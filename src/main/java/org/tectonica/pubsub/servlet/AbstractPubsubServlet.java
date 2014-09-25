@@ -63,12 +63,12 @@ public abstract class AbstractPubsubServlet extends HttpServlet implements Pubsu
 
 		try
 		{
+			ServletUtil.applyCORS(req, resp);
+
 			String topic = req.getPathInfo().substring(1);
 			String msg = ServletUtil.streamToString(req.getInputStream());
 
 			// TODO: check if the caller is authorized to publish to this topic (IP, Headers, etc.)
-
-			ServletUtil.applyCORS(req, resp);
 
 			resp.setContentType("application/json");
 			PublishResponse response = publish(topic, msg, req.getParameter("exclude"));
@@ -80,5 +80,13 @@ public abstract class AbstractPubsubServlet extends HttpServlet implements Pubsu
 			resp.getWriter().println(e.toString());
 			resp.sendError(404);
 		}
+	}
+
+	@Override
+	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+	{
+		ServletUtil.applyCORS(req, resp);
+		resp.setContentType("text/plain");
+		resp.setStatus(204);
 	}
 }
