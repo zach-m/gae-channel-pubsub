@@ -1,4 +1,4 @@
-package org.tectonica.pubsub.intf;
+package com.tectonica.pubsub.intf;
 
 import javax.servlet.http.HttpServletRequest;
 

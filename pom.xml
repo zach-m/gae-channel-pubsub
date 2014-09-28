@@ -6,7 +6,7 @@
 	<packaging>war</packaging>
 	<version>0.1</version>
 
-	<groupId>org.tectonica</groupId>
+	<groupId>com.tectonica</groupId>
 	<artifactId>gae-channel-pubsub</artifactId>
 
 	<properties>

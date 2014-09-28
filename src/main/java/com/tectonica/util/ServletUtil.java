@@ -1,4 +1,4 @@
-package org.tectonica.util;
+package com.tectonica.util;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

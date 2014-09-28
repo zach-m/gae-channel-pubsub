@@ -1,4 +1,4 @@
-package org.tectonica.pubsub.servlet;
+package com.tectonica.pubsub.servlet;
 
 import java.io.IOException;
 import java.util.Set;
@@ -6,9 +6,9 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.tectonica.pubsub.intf.PubsubPersister;
-import org.tectonica.pubsub.persist.PubsubInMemStore;
-import org.tectonica.util.JsonUtil;
+import com.tectonica.pubsub.intf.PubsubPersister;
+import com.tectonica.pubsub.persist.PubsubInMemStore;
+import com.tectonica.util.JsonUtil;
 
 import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelPresence;

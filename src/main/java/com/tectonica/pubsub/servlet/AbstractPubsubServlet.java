@@ -1,4 +1,4 @@
-package org.tectonica.pubsub.servlet;
+package com.tectonica.pubsub.servlet;
 
 import java.io.IOException;
 
@@ -7,9 +7,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.tectonica.pubsub.intf.PubsubAgent;
-import org.tectonica.util.JsonUtil;
-import org.tectonica.util.ServletUtil;
+import com.tectonica.pubsub.intf.PubsubAgent;
+import com.tectonica.util.JsonUtil;
+import com.tectonica.util.ServletUtil;
 
 @SuppressWarnings("serial")
 public abstract class AbstractPubsubServlet extends HttpServlet implements PubsubAgent

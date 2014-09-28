@@ -1,4 +1,4 @@
-package org.tectonica.util;
+package com.tectonica.util;
 
 import java.io.IOException;
 import java.io.InputStream;

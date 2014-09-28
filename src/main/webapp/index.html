@@ -52,7 +52,7 @@
 			window.location.origin = window.location.protocol + "//" + window.location.host;
 		$('#topicEdit').val("topic1");
 	}
-	
+
 	PBSB.listener.onConnect = function() {
 		logMessage('Connected', 'green');
 	};
@@ -87,12 +87,12 @@
 <body onload="onBodyLoad()">
 	<br />
 	<button id="connectBtn"
-		onclick="PBSB.connect(window.location.origin + '/pubsub')">Connect</button>
+		onclick="logMessage('Connecting..'); PBSB.connect(window.location.origin + '/pubsub')">Connect</button>
 	<br /> Topic:
 	<input type="text" name="topicEdit" id="topicEdit" value="topic-here"
 		style="width: 350px;" />
 	<button id="subscribeBtn"
-		onclick="PBSB.subscribe(document.getElementsByName('topicEdit')[0].value)">Subscribe</button>
+		onclick="logMessage('Subscribing..'); PBSB.subscribe(document.getElementsByName('topicEdit')[0].value)">Subscribe</button>
 	<br />
 	<input type="text" name="msgEdit" id="msgEdit" value="Get This!" />
 	<button id="publishBtn"

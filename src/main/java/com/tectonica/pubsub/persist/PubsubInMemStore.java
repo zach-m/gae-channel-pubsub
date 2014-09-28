@@ -1,10 +1,10 @@
-package org.tectonica.pubsub.persist;
+package com.tectonica.pubsub.persist;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.tectonica.pubsub.intf.PubsubPersister;
-import org.tectonica.util.ConcurrentMultimap;
+import com.tectonica.pubsub.intf.PubsubPersister;
+import com.tectonica.util.ConcurrentMultimap;
 
 public class PubsubInMemStore implements PubsubPersister
 {
