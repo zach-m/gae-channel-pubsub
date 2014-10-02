@@ -3,8 +3,8 @@ package com.tectonica.pubsub.persist;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.tectonica.collections.ConcurrentMultimap;
 import com.tectonica.pubsub.intf.PubsubPersister;
-import com.tectonica.util.ConcurrentMultimap;
 
 public class PubsubInMemStore implements PubsubPersister
 {
