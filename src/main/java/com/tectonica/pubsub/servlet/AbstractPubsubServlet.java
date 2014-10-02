@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tectonica.pubsub.intf.PubsubAgent;
-import com.tectonica.util.JsonUtil;
+import com.tectonica.util.Jackson2;
 import com.tectonica.util.ServletUtil;
 
 @SuppressWarnings("serial")
@@ -39,7 +39,7 @@ public abstract class AbstractPubsubServlet extends HttpServlet implements Pubsu
 					boolean autoCreateTopic = true; // NOTE: you need to make a security-decision here
 					resp.setContentType("application/json");
 					SubscribeResponse response = subscribe(pieces[2], pieces[3], autoCreateTopic);
-					JsonUtil.toJson(resp.getWriter(), response);
+					Jackson2.toJson(resp.getWriter(), response);
 				}
 			}
 		}
@@ -73,7 +73,7 @@ public abstract class AbstractPubsubServlet extends HttpServlet implements Pubsu
 
 			resp.setContentType("application/json");
 			PublishResponse response = publish(topic, msg, req.getParameter("exclude"));
-			JsonUtil.toJson(resp.getWriter(), response);
+			Jackson2.toJson(resp.getWriter(), response);
 		}
 		catch (Exception e)
 		{

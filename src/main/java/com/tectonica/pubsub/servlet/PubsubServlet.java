@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.tectonica.pubsub.intf.PubsubPersister;
 import com.tectonica.pubsub.persist.PubsubInMemStore;
-import com.tectonica.util.JsonUtil;
+import com.tectonica.util.Jackson2;
 
 import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelPresence;
@@ -73,7 +73,7 @@ public class PubsubServlet extends AbstractPubsubServlet
 		if (subscribers != null)
 		{
 			subscribers.remove(excludeToken);
-			String payloadJson = JsonUtil.toJson(mp);
+			String payloadJson = Jackson2.toJson(mp);
 			response.subCount = subscribers.size();
 			for (String token : subscribers)
 				channelService.sendMessage(new ChannelMessage(token, payloadJson));
