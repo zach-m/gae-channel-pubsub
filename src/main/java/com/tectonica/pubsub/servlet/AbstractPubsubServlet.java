@@ -63,6 +63,7 @@ public abstract class AbstractPubsubServlet extends HttpServlet implements Pubsu
 
 		try
 		{
+			// PUBLISH request
 			ServletUtil.applyCORS(req, resp);
 
 			String topic = req.getPathInfo().substring(1);
