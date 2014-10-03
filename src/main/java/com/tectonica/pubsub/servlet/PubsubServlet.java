@@ -73,7 +73,7 @@ public class PubsubServlet extends AbstractPubsubServlet
 		if (subscribers != null)
 		{
 			subscribers.remove(excludeToken);
-			String payloadJson = Jackson2.toJson(mp);
+			String payloadJson = Jackson2.fieldsToJson(mp);
 			response.subCount = subscribers.size();
 			for (String token : subscribers)
 				channelService.sendMessage(new ChannelMessage(token, payloadJson));

@@ -12,7 +12,7 @@
 	<properties>
 		<appengine.app.version>1</appengine.app.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<version.tectonica>0.1.1</version.tectonica>
+		<version.tectonica>0.1.2</version.tectonica>
 		<version.jackson>2.4.2</version.jackson>
 	</properties>
 

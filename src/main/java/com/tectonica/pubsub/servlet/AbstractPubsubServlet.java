@@ -39,7 +39,7 @@ public abstract class AbstractPubsubServlet extends HttpServlet implements Pubsu
 					boolean autoCreateTopic = true; // NOTE: you need to make a security-decision here
 					resp.setContentType("application/json");
 					SubscribeResponse response = subscribe(pieces[2], pieces[3], autoCreateTopic);
-					Jackson2.toJson(resp.getWriter(), response);
+					Jackson2.fieldsToJson(resp.getWriter(), response);
 				}
 			}
 		}
@@ -73,7 +73,7 @@ public abstract class AbstractPubsubServlet extends HttpServlet implements Pubsu
 
 			resp.setContentType("application/json");
 			PublishResponse response = publish(topic, msg, req.getParameter("exclude"));
-			Jackson2.toJson(resp.getWriter(), response);
+			Jackson2.fieldsToJson(resp.getWriter(), response);
 		}
 		catch (Exception e)
 		{
