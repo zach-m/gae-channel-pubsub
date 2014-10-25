@@ -6,18 +6,18 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.tectonica.pubsub.intf.PubsubPersister;
-import com.tectonica.pubsub.persist.PubsubInMemStore;
-import com.tectonica.util.Jackson2;
-
 import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelPresence;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
+import com.tectonica.pubsub.intf.PubsubPersister;
+import com.tectonica.pubsub.persist.PubsubInMemStore;
 
 @SuppressWarnings("serial")
 public class PubsubServlet extends AbstractPubsubServlet
 {
+	private static final String ADMIN_TOPIC = "_admin";
+
 	private ChannelService channelService = ChannelServiceFactory.getChannelService();
 	private PubsubPersister pubsubStore = PubsubInMemStore.get();
 
@@ -28,6 +28,9 @@ public class PubsubServlet extends AbstractPubsubServlet
 			clientId = UUID.randomUUID().toString();
 		String token = channelService.createChannel(clientId);
 		pubsubStore.setClientToken(clientId, token);
+
+		publishAdminMessage(new MessagePayload("connected clientId " + clientId, ADMIN_TOPIC));
+		
 		return token;
 	}
 
@@ -50,6 +53,8 @@ public class PubsubServlet extends AbstractPubsubServlet
 				{
 					System.out.println(String.format("clientId %s disconnected (token %s)", clientId, token));
 					pubsubStore.detachSubscriber(token);
+
+					publishAdminMessage(new MessagePayload("disconnected clientId " + clientId, ADMIN_TOPIC));
 				}
 			}
 		}
@@ -62,19 +67,28 @@ public class PubsubServlet extends AbstractPubsubServlet
 	@Override
 	public PublishResponse publish(String topic, String msg, String excludeToken)
 	{
-		MessagePayload mp = new MessagePayload();
-		mp.msg = msg;
-		mp.topic = topic;
+		MessagePayload mp = new MessagePayload(msg, topic);
 
+		publishAdminMessage(mp);
+
+		return publishMessage(mp, topic, excludeToken);
+	}
+
+	private void publishAdminMessage(MessagePayload mp)
+	{
+		publishMessage(mp, ADMIN_TOPIC, null);
+	}
+
+	private PublishResponse publishMessage(MessagePayload mp, String topic, String excludeToken)
+	{
 		PublishResponse response = new PublishResponse();
-		response.subCount = 0;
 
 		Set<String> subscribers = pubsubStore.getSubscribers(topic);
 		if (subscribers != null)
 		{
-			subscribers.remove(excludeToken);
-			String payloadJson = Jackson2.fieldsToJson(mp);
 			response.subCount = subscribers.size();
+			subscribers.remove(excludeToken);
+			String payloadJson = mp.toJson();
 			for (String token : subscribers)
 				channelService.sendMessage(new ChannelMessage(token, payloadJson));
 		}
@@ -87,6 +101,9 @@ public class PubsubServlet extends AbstractPubsubServlet
 	{
 		SubscribeResponse response = new SubscribeResponse();
 		response.subCount = pubsubStore.attachSubscriber(topic, token, autoCreateTopic);
+
+		publishAdminMessage(new MessagePayload("#" + response.subCount + " subscribed " + topic, ADMIN_TOPIC));
+
 		return response;
 	}
 }
