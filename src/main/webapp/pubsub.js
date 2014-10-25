@@ -31,41 +31,27 @@
 
 		connect : function(homeUrl) {
 			mHomeUrl = homeUrl;
-			$.ajax({
-				type : "GET",
-				url : mHomeUrl,
-				success : function(token) {
-					mToken = token.trim();
-					log('*** ontoken: ' + mToken);
-					PBSB.listener.onToken(mToken);
-					openChannel(mToken);
-				}
+			GET(mHomeUrl, function(token) {
+				mToken = token.trim();
+				log('*** ontoken: ' + mToken);
+				PBSB.listener.onToken(mToken);
+				openChannel(mToken);
 			});
 		},
 
 		subscribe : function(topic) {
-			$.ajax({
-				type : "GET",
-				url : mHomeUrl + "/subscribe/" + topic + "/" + mToken,
-				success : function(data) {
-					subCount = data.subCount;
-					log('*** onsubscribe: ' + topic + '  (' + subCount + ' subscribers)');
-					PBSB.listener.onSubscribe(topic, subCount);
-				}
+			GET(mHomeUrl + "/subscribe/" + topic + "/" + mToken, function(data) {
+				subCount = data.subCount;
+				log('*** onsubscribe: ' + topic + '  (' + subCount + ' subscribers)');
+				PBSB.listener.onSubscribe(topic, subCount);
 			});
 		},
 
 		publish : function(topic, msg, excludeSelf) {
 			var excStr = (excludeSelf && excludeSelf == true) ? ("?exclude=" + mToken) : "";
-			$.ajax({
-				type : "POST",
-				url : mHomeUrl + "/" + topic + excStr,
-				data : msg,
-				contentType : "text/plain; charset=utf-8",
-				success : function(data) {
-					log('*** onpublish (' + topic + '): ' + msg);
-					PBSB.listener.onMessageSent(msg, data.subCount);
-				}
+			POST(mHomeUrl + "/" + topic + excStr, msg, function(data) {
+				log('*** onpublish (' + topic + '): ' + msg);
+				PBSB.listener.onMessageSent(msg, data.subCount);
 			});
 		}
 	};
@@ -94,6 +80,40 @@
 				// TODO: initiate auto-reconnect?
 			}
 		});
+	}
+
+	function GET(url, successCallback, errorCallback) {
+		var xhr = createXHR('GET', url, successCallback, errorCallback);
+		xhr.send();
+	}
+
+	function POST(url, data, successCallback, errorCallback) {
+		var xhr = createXHR('POST', url, successCallback, errorCallback);
+		xhr.setRequestHeader("Content-type", "text/plain; charset=utf-8");
+		xhr.send(data);
+	}
+
+	function createXHR(method, url, successCallback, errorCallback) {
+		var xhr;
+		try {
+			xhr = new XMLHttpRequest();
+		} catch (e) {
+			xhr = new ActiveXObject("MSXML2.XMLHTTP.3.0");
+		}
+		xhr.open(method, url, true);
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4) {
+				if (xhr.status == 200) {
+					var ct = xhr.getResponseHeader("content-type");
+					if (ct && ct.indexOf("application/json") >= 0)
+						successCallback(JSON.parse(xhr.responseText));
+					else
+						successCallback(xhr.responseText);
+				} else
+					errorCallback(xhr.status, xhr.responseText);
+			}
+		};
+		return xhr;
 	}
 
 	function log(text) {

@@ -6,7 +6,7 @@
 <style type="text/css">
 #console-container {
 	margin-top: 15px;
-	width: 400px;
+	width: 95%;
 }
 
 #console {
@@ -26,10 +26,14 @@
 }
 </style>
 
-<script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
-<!--  script src="/_ah/channel/jsapi"></script -->
+<!-- during development: -->
+<!-- <script src="/_ah/channel/jsapi"></script> -->
+
+<!-- in production: -->
 <script src="https://talkgadget.google.com/talkgadget/channel.js"></script>
+
 <script src="/pubsub.js"></script>
+<!-- <script src="/pubsub-min.js"></script> -->
 
 <script>
 	function logMessage(message, color) {
@@ -50,11 +54,12 @@
 	function onBodyLoad() {
 		if (!window.location.origin)
 			window.location.origin = window.location.protocol + "//" + window.location.host;
-		$('#topicEdit').val("topic1");
+		document.getElementById('topicEdit').value = "topic1";
 	}
 
 	PBSB.listener.onConnect = function() {
 		logMessage('Connected', 'green');
+		document.getElementById('mainPanel').style.display = 'block';
 	};
 
 	PBSB.listener.onDisconnect = function() {
@@ -86,18 +91,17 @@
 
 <body onload="onBodyLoad()">
 	<br />
-	<button id="connectBtn"
-		onclick="logMessage('Connecting..'); PBSB.connect(window.location.origin + '/pubsub')">Connect</button>
-	<br /> Topic:
-	<input type="text" name="topicEdit" id="topicEdit" value="topic-here"
-		style="width: 350px;" />
-	<button id="subscribeBtn"
-		onclick="logMessage('Subscribing..'); PBSB.subscribe(document.getElementsByName('topicEdit')[0].value)">Subscribe</button>
+	<button id="connectBtn" onclick="logMessage('Connecting..'); PBSB.connect(window.location.origin + '/pubsub')">Connect</button>
 	<br />
-	<input type="text" name="msgEdit" id="msgEdit" value="Get This!" />
-	<button id="publishBtn"
-		onclick="PBSB.publish(document.getElementsByName('topicEdit')[0].value, document.getElementsByName('msgEdit')[0].value, false)">Publish</button>
-	<br />
+	<div id="mainPanel" style="display: none;">
+		<br /> Topic: <input type="text" name="topicEdit" id="topicEdit" value="topic-here" style="width: 350px;" />
+		<button id="subscribeBtn"
+			onclick="logMessage('Subscribing..'); PBSB.subscribe(document.getElementsByName('topicEdit')[0].value)">Subscribe</button>
+		<br /> <br /> <input type="text" name="msgEdit" id="msgEdit" value="Get This!" />
+		<button id="publishBtn"
+			onclick="PBSB.publish(document.getElementsByName('topicEdit')[0].value, document.getElementsByName('msgEdit')[0].value, false)">Publish</button>
+		<br />
+	</div>
 	<div id="console-container">
 		<div id="console"></div>
 	</div>
